@@ -1,7 +1,9 @@
 import aubio
+import wave
 import pysoundcard as sound
 
 #s = aubio.source(sound.Stream())
+#this gets called 44100/hop_size times per second
 def get_file():
     fname = str(int(random.random()*10**9))+'.wav'
     '''makes a temporary wave file.
