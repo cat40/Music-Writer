@@ -1,0 +1,34 @@
+import aubio
+import pysoundcard as sound
+
+#s = aubio.source(sound.Stream())
+def get_file():
+    fname = str(int(random.random()*10**9))+'.wav'
+    '''makes a temporary wave file.
+    PyAudio will write to this file as Aubio reads from it
+    '''
+    chunk = 1024
+    frames = []
+    p = pyaudio.PyAudio()
+    stream = p.open(format=pyaudio.paInt16,
+                    channels=1,
+                    rate=44100,
+                    input=True,
+                    frames_per_buffer=chunk)
+    
+    #for _ in range(int(44100.0/chunk*time)):
+    frames.append(stream.read(chunk))
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    
+    #with SpooledTemporaryFile() as temp:
+    temp = wave.open(fname, 'wb')
+    temp.setnchannels(1)
+    temp.setsampwidth(p.get_sample_size(pyaudio.paInt16))
+    temp.setframerate(44100)
+    temp.writeframes(b''.join(frames))
+    temp.close()
+    return fname
+
+
