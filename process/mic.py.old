@@ -6,7 +6,8 @@ import pysoundcard as sound
 #this gets called 44100/hop_size times per second
 def get_file():
     fname = str(int(random.random()*10**9))+'.wav'
-    '''makes a temporary wave file.
+    '''
+    makes a temporary wave file.
     PyAudio will write to this file as Aubio reads from it
     '''
     chunk = 1024
