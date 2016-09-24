@@ -1,2 +1,3 @@
-import process
-hopsize = 256
+import dynamic
+import static
+from variables import *
