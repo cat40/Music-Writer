@@ -16,18 +16,18 @@ def get_notes(fname):
     oldtime = 0
     for pitch, time in dynamic.get_pitches(fname):
         try: pitchName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
-        except ValueError: pass
+        except ValueError: pitchName = 'rest'
         else:
-##            if new:
-##                pitchold = pitch
-##                pitcholdName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
-##                new = False
-##            elif pitchName == pitcholdName:
-##                count += 1
-##            else:
-##                new = True
-            yield music.Note(pitch, count, time-oldtime)
-##                count = 0
+            if new:
+                pitchold = pitch
+                pitcholdName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
+                new = False
+            elif pitchName == pitcholdName:
+                count += 1
+            else:
+                new = True
+                yield music.Note(pitch, count, time-oldtime)
+                count = 0
         oldtime = time
                 
 #does not do tempo changes yet
