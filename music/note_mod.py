@@ -1,11 +1,9 @@
-import aubio
 class Note(object):
     @classmethod
     #see if can remove master_lenth argument and import it from something else
-    def __init__(self, freq, count, time):
-        self.freq = freq
+    def __init__(self, name, count, time):
         self.count = count
-        self.name = aubio.freq2note(freq)
+        self.name = name
         self.time = time
         self.frac = 0#get_frac(master_lenth) #defined when note.get_frac is called on the note object
         self.beats = 0#defined by get_beats. 

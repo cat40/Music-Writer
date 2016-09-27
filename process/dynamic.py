@@ -41,6 +41,7 @@ def get_file():
     return fname
 
 def get_pitches(fname):
+    #might want to use midi instead of hz for increases accruacy, or some other unit
     count = 0
     s = aubio.source(fname)
     #s = aubio.source()
@@ -49,7 +50,7 @@ def get_pitches(fname):
     win_s = 4096
     hop_s = 512
     #aubio.pitch(method, buffer size, hop size, sample rate (see command line docs))
-    pitch_o = aubio.pitch('yin', win_s, hop_s, samplerate)
+    pitch_o = aubio.pitch('schmitt', win_s, hop_s, samplerate)
     #this makes it put out midi numbers, NOT heartz!!!!!!!!
     #pitch_o.set_unit('midi')
     pitch_o.set_tolerance(0.8)
