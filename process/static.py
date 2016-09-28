@@ -16,57 +16,47 @@ sys.path.remove(searchPath)
 #    - Check if note == previous note, in which case don't yeild until note != previous note (might need to sum times)
 #However, those are probably inaccurate oscelations
 def get_notes(fname):
-    #next(p_iter(), default_value) does not raise exception on end, p_iter.next() does
-    pitches = dynamic.get_pitches(fname)
-    p_iter = iter(pitches)
-    pitchname = oldpitchname = None
-    pitch = True
-    while pitch:
-        pitch, time = next(p_iter, (None, None))
-        oldtime = time
-        pitchold = pitch
-        pitchname = oldpitchname = aubio.freq2note(pitch)
-        count = 0
-        slightlyoldtime = 0
-        while pitchname == oldpitchname:
-            #gets next pitch and timestamp
-            slightlyoldtime = time
+    def get_notes_helper(fname):
+        #next(p_iter(), default_value) does not raise exception on end, p_iter.next() does
+        pitches = dynamic.get_pitches(fname)
+        p_iter = iter(pitches)
+        pitchname = oldpitchname = None
+        pitch = True
+        while pitch:
             pitch, time = next(p_iter, (None, None))
-            #break loop if iterator is out. 
-            if not pitch: break
-            pitchname = aubio.freq2note(pitch)
-            print pitchname, oldpitchname
-            count += 1
-        yield music.Note(oldpitchname, count, slightlyoldtime-oldtime)
-            
-            
-##    new = True
-##    count = 0
-##    oldtime = 0
-##    maintime = 0
-##    pitcholdName = None
-##    #next try a pair of while loops while using iter object and iter.next()
-##    for pitch, time in dynamic.get_pitches(fname):
-##        time -= oldtime
-##        try: pitchName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
-##        except ValueError: pitchName = 'rest'
-##        else:
-##            if not new:
-##                if pitchName == pitcholdName:
-##                    count += 1
-##                    maintime += time
-##                else:
-##                    yield music.Note(pitchold, count, maintime)
-##                    pitchold = pitch
-##                    pitcholdName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
-##                    count = 0
-##                    maintime = 0
-##                #print pitchName, pitcholdName
-##            else:
-##                new = False
-##                pitchold = pitch
-##                pitcholdName = aubio.freq2note(pitch) if pitch != 0 else 'rest'
-##        oldtime += time
+            print pitch, time
+            oldtime = time
+            pitchold = pitch
+            pitchname = oldpitchname = aubio.freq2note(pitch)
+            count = 0
+            slightlyoldtime = 0
+            while pitchname == oldpitchname:
+                #gets next pitch and timestamp
+                slightlyoldtime = time
+                pitch, time = next(p_iter, (None, None))
+                #break loop if iterator is out. 
+                if not pitch: break
+                pitchname = aubio.freq2note(pitch)
+                count += 1
+            yield music.Note(oldpitchname, count, slightlyoldtime)            
+    oldnote = None
+    newtime = 0
+    newcount = 0
+    count = 0
+    oldtime = 0
+    notes = get_notes_helper(fname)
+    for note in notes:
+        if oldnote:
+            if note.name == oldnote.name:
+                newtime = note.time
+                count += note.count
+            else:
+                yield music.Note(oldnote.name, count, newtime-oldtime)
+                count = 0
+                newtime = 0
+                oldtime = newtime
+        oldnote = note
+    yield music.Note(oldnote.name, count, newtime-oldtime)
                 
 #does not do tempo changes yet
 def get_bpm(fname):
@@ -116,9 +106,12 @@ def get_bpm(fname):
 ##def reason_notes(notes):
 ##    
 
+##def get_key(notes):
+##    keys = {0:'C', 1:'G', 2:'D', 3:'A', 4:'E', 5:'B', 6:'F#',
+##            -1:'F', -2:'Bb', -3:'Eb', -4:'Ab', -5:'Db'}
+##    #sharps
+##    for note in notes:     
+        
 c = 0
-for note in get_notes('a3.wav'):
+for note in get_notes('notebreak.wav'):
     print note.name, note.time
-    c += 1
-    if c > 25:
-        break
